@@ -70,7 +70,11 @@ public class WorkerThread implements Runnable {
 			if(!this.isFree()){
 				currentTask.execute();
 				makeFree();
+				if(Protocol.DEBUG){
+				System.out.println("I completed a Task");
+				}
 			}
+				
 
 		}
 

@@ -46,7 +46,7 @@ public class ThreadPoolManager {
 		}
 	}
 
-	public Task getNextTask(){
+	private Task getNextTask(){
 		Task retTask=null;
 		try{
 			poolLock.lock();
@@ -59,7 +59,7 @@ public class ThreadPoolManager {
 		return retTask;
 	}
 	
-	public int getNumPendingTasks(){
+	private int getNumPendingTasks(){
 		try{
 			poolLock.lock();
 			return pendingTasks.size();
@@ -67,7 +67,7 @@ public class ThreadPoolManager {
 			poolLock.unlock();
 		}
 	}
-
+/*
 	public void sampleLoop(){
 		for(int loop=0;; ++loop){
 			//System.out.println("Making sample loop");
@@ -75,18 +75,6 @@ public class ThreadPoolManager {
 			if(Protocol.DEBUG){
 				
 				if(loop<8) System.out.println("There are "+getNumPendingTasks()+" pending tasks");
-				Random rand = new Random();
-				int i=0;
-				if(loop<5){
-					for(; i<rand.nextInt(5); i++){
-						addTask(new SampleTask());
-						numTasks++;
-					}
-					System.out.println("Added "+(i+1)+" tasks");
-				}
-				else if(loop==5){
-					System.out.println("Total of "+numTasks+" created");
-				}
 			}
 		}
 
@@ -99,7 +87,7 @@ public class ThreadPoolManager {
 		tpm.sampleLoop();
 
 	}
-
+*/
 	public void addTask(Task newTask){
 		try{
 			poolLock.lock();
@@ -126,9 +114,10 @@ public class ThreadPoolManager {
 				if(taskThread!=null){
 					Task nextTask = getNextTask();
 					taskThread.giveTask(nextTask);
+					
 				}
 				else{
-					System.out.println("No free threads");
+					//System.out.println("No free threads");
 					//pendingTasks.add(newTask);
 				}
 			}else{
