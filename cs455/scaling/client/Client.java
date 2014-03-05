@@ -51,79 +51,25 @@ public class Client {
 		if(Protocol.DEBUG){
 			System.out.println("Connected");
 		}
+		//while(!sock.isConnected()){;}
 		Random rand = new Random();
 		
-		while(true)
-		//for(int i=0; i<10; ++i)
+		//while(true)
+		for(int i=0; i<5; ++i)
 		{
 			if(Protocol.DEBUG){
 				System.out.println("Pending hashes: "+sentHashCodes.size());
 			}
 			ByteBuffer buf = ByteBuffer.allocate(Protocol.MESSAGE_SIZE);
+			checkForResponse(buf);
 			//check for response
-			int bytesRead=0;
-			try {
-				System.out.println("2");
-				//TODO ??!?!?!?!?! WHERE DO THE FLIPS GO?
-				buf.flip();
-				bytesRead = sock.read(buf);
-				System.out.println("3");
-				buf.flip();
-				System.out.println("4");
-				if(bytesRead == -1){
-					System.out.println("Connection Closed in Client");
-				}
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			//if have message, check awaited hashes
-			if(bytesRead >0){
-				System.out.println("5");
-				byte[] resBytes = new byte[Protocol.MESSAGE_SIZE];
-					buf.get(resBytes);
-				String response = new String(resBytes);
-				int respIndex = sentHashCodes.indexOf(response);
-				//if were waiting for such a hash code, remove it from the list
-				if(respIndex != -1){
-					sentHashCodes.remove(respIndex);
-				}
-				else{
-					System.out.println("Client recieved unexpected hash");
-				}
-				
-			}
+			
+			
 			System.out.println("6");
-			//generate a message
-			byte [] message = new byte[Protocol.MESSAGE_SIZE];
-			rand.nextBytes(message);
-			//calculate and store hash
-			String hash="hash";
-			//REMOVE ME!!
-			sentHashCodes.add(hash);
-			/*try {
-				hash = Utilities.SHA1FromBytes(message);
-				sentHashCodes.add(hash);
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-			//prepare buffer for writing
-			buf.clear();
-			buf.put(hash.getBytes());
-			buf.flip(); //read to read into channel
-			//write message
-			while(buf.hasRemaining()){
-				try {
-					sock.write(buf);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if(Protocol.DEBUG){
-				System.out.println("Sent Message");
-			}
+			
+			//write new message
+			writeMessage(buf);
+			
 			
 			//sleep to establish message rate
 			try {
@@ -137,12 +83,96 @@ public class Client {
 			}
 			
 		}
+		//DELETE ME!!
+		while(true){}
 		
 		
 	}
 	
+	private void writeMessage(ByteBuffer buf){
+		byte[] message = createAndHashMessage();
+		//write message
+		writeMessageToBuffer(buf, message);
+	}
+	
+	public void writeMessageToBuffer(ByteBuffer buf, byte[] message){
+		buf.put(message);
+		buf.flip(); //read to read into channel
+		//write message
+		while(buf.hasRemaining()){
+			try {
+				sock.write(buf);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if(Protocol.DEBUG){
+			System.out.println("Sent Message");
+		}
+	}
+	private byte[] createAndHashMessage(){
+		//generate a message
+		byte [] message = new byte[Protocol.MESSAGE_SIZE];
+		(new Random()).nextBytes(message);
+		//calculate and store hash
+		String hash="hash";
+		try {
+			hash = Utilities.SHA1FromBytes(message);
+			sentHashCodes.add(hash);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return message;
+	}
+	
+	private void checkForResponse(ByteBuffer buf) {
+		int bytesRead=0;
+		try {
+			System.out.println("2");
+			//TODO ??!?!?!?!?! WHERE DO THE FLIPS GO?
+			buf.flip();
+			bytesRead = sock.read(buf);
+			System.out.println("3");
+			buf.flip();
+			System.out.println("4");
+			if(bytesRead == -1){
+				System.out.println("Connection Closed in Client");
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		//if have message, check awaited hashes
+		if(bytesRead >0){
+			checkHashes(buf);
+		}
+		
+		buf.clear();
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void checkHashes(ByteBuffer buf){
+		System.out.println("5");
+		byte[] resBytes = new byte[Protocol.MESSAGE_SIZE];
+			buf.get(resBytes);
+		String response = new String(resBytes);
+		int respIndex = sentHashCodes.indexOf(response);
+		//if were waiting for such a hash code, remove it from the list
+		if(respIndex != -1){
+			sentHashCodes.remove(respIndex);
+		}
+		else{
+			System.out.println("Client recieved unexpected hash");
+		}
+		
+	}
+
 	private void establishConnection() throws IOException{
 		sock = SocketChannel.open();
+		//sock.configureBlocking(false);
 		sock.connect(new InetSocketAddress(this.serverHostName, this.serverPort));
 	}
 }

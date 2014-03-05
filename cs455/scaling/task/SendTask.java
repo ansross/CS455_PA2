@@ -1,23 +1,55 @@
 package cs455.scaling.task;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+
+import cs455.scaling.client.ClientInfo;
+import cs455.scaling.util.Protocol;
 
 //is writable
 public class SendTask implements Task{
 	SelectionKey key;
-	
+
 	public SendTask(SelectionKey keyArg){
-		this.key=keyArg;
+		ClientInfo client = (ClientInfo) keyArg.attachment();
+		synchronized(client){
+			client.setWriting(true);
+			this.key=keyArg;
+		}
 	}
 
 	@Override
 	public void execute() {
-		SocketChannel channel = (SocketChannel) key.channel();
-		
+		if(Protocol.DEBUG){
+			System.out.println("I am writing");
+		}
+
+		ClientInfo client = (ClientInfo) key.attachment();
+		synchronized(client){
+
+			SocketChannel channel = (SocketChannel) key.channel();
+			ArrayList<byte []> writeList = client.getPendingWriteList();
+			for(byte[] data : writeList){
+				ByteBuffer buffer = ByteBuffer.wrap(data);
+				try {
+					channel.write(buffer);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			writeList.clear();
+			key.interestOps(SelectionKey.OP_READ);
+			client.setWriting(false);
+
+		}
+
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	
+
+
 }

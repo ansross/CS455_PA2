@@ -14,8 +14,13 @@ public class ReadTask implements Task {
 	private SelectionKey key;
 	
 	public ReadTask(SelectionKey keyArg, Server servArg){
-		this.key=keyArg;
-		this.server=servArg;
+		ClientInfo client = (ClientInfo) keyArg.attachment();
+		synchronized(client){
+			client.setReading(true);
+			this.key=keyArg;
+			this.server=servArg;
+		}
+		
 	}
 
 	@Override
@@ -41,7 +46,7 @@ public class ReadTask implements Task {
 			return;
 		}
 		System.out.println("1");
-		if(read==-1){
+		//if(read==-1){
 			System.out.println("2");
 			buffer.flip();
 			System.out.println("3");
@@ -51,10 +56,14 @@ public class ReadTask implements Task {
 			//TODO
 			long hash = 0;
 			System.out.println("IMPLEMENT HASH");
-			ClientInfo client = (ClientInfo) key.attachment();
-			client.addToPendingWriteList(hash);
+			//ClientInfo client = (ClientInfo) key.attachment();
+			//client.addToPendingWriteList(hash);
 			key.interestOps(SelectionKey.OP_WRITE);
-		}
+		//}
+			ClientInfo client = (ClientInfo) key.attachment();
+			synchronized(client){
+				client.setReading(false);
+			}
 		// TODO Auto-generated method stub
 		
 	}

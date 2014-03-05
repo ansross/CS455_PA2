@@ -113,11 +113,12 @@ public class ThreadPoolManager {
 				//if there is a free thread, give it the task
 				if(taskThread!=null){
 					Task nextTask = getNextTask();
+					System.out.println("pendingTasks size" + pendingTasks.size());
 					taskThread.giveTask(nextTask);
 					
 				}
 				else{
-					//System.out.println("No free threads");
+					System.out.println("No free threads");
 					//pendingTasks.add(newTask);
 				}
 			}else{

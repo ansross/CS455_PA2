@@ -1,6 +1,7 @@
 package cs455.scaling.task;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
@@ -27,9 +28,9 @@ public class ConnectTask implements Task {
 		ServerSocketChannel servSockCh = (ServerSocketChannel) key.channel();
 		try {
 			SocketChannel channel = servSockCh.accept();
-			ClientInfo client = new ClientInfo(channel);
+			//Socket socket = channel.socket();
 			if(Protocol.DEBUG){
-				System.out.println("Accepting incoming connection");
+				System.out.println("Accepting incoming connection "+Thread.currentThread().getName());
 				System.out.println("null channel: "+(channel==null));
 			}
 			//since non-blocking, wait until established
@@ -38,7 +39,7 @@ public class ConnectTask implements Task {
 					
 				}
 			}
-			
+			ClientInfo client = new ClientInfo(channel);
 			channel.configureBlocking(false);
 			//register new channel with server's selector
 			
