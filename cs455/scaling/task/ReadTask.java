@@ -12,7 +12,7 @@ import cs455.scaling.util.Protocol;
 public class ReadTask implements Task {
 	private Server server;
 	private SelectionKey key;
-	
+
 	public ReadTask(SelectionKey keyArg, Server servArg){
 		ClientInfo client = (ClientInfo) keyArg.attachment();
 		synchronized(client){
@@ -20,7 +20,7 @@ public class ReadTask implements Task {
 			this.key=keyArg;
 			this.server=servArg;
 		}
-		
+
 	}
 
 	@Override
@@ -46,26 +46,29 @@ public class ReadTask implements Task {
 			return;
 		}
 		System.out.println("1");
-		//if(read==-1){
-			System.out.println("2");
-			buffer.flip();
-			System.out.println("3");
-			byte[] bufferBytes = new byte[Protocol.MESSAGE_SIZE];
-			buffer.get(bufferBytes);
-			System.out.println("4");
+		if(read==-1){
 			//TODO
-			long hash = 0;
-			System.out.println("IMPLEMENT HASH");
-			//ClientInfo client = (ClientInfo) key.attachment();
-			//client.addToPendingWriteList(hash);
-			key.interestOps(SelectionKey.OP_WRITE);
+			//client terminated connection
+			//server.disconnet(key);
+			return;
+		}
+
+		buffer.flip();
+		byte[] bufferBytes = new byte[Protocol.MESSAGE_SIZE];
+		buffer.get(bufferBytes);
+		//TODO
+		String hash = "7";
+		System.out.println("IMPLEMENT HASH");
+		ClientInfo client = (ClientInfo) key.attachment();
+		client.addToPendingWriteList(hash);
+		key.interestOps(SelectionKey.OP_WRITE);
 		//}
-			ClientInfo client = (ClientInfo) key.attachment();
-			synchronized(client){
-				client.setReading(false);
-			}
+		//ClientInfo client = (ClientInfo) key.attachment();
+		synchronized(client){
+			client.setReading(false);
+		}
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

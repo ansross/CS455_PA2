@@ -28,24 +28,30 @@ public class SendTask implements Task{
 		}
 
 		ClientInfo client = (ClientInfo) key.attachment();
-		synchronized(client){
+		//synchronized(client){
 
-			SocketChannel channel = (SocketChannel) key.channel();
-			ArrayList<byte []> writeList = client.getPendingWriteList();
-			for(byte[] data : writeList){
+		SocketChannel channel = (SocketChannel) key.channel();
+		ArrayList<byte []> writeList = client.getPendingWriteList();
+		System.out.println("write list length: "+writeList.size());
+		for(byte[] data : writeList){
+
+			try {
+				System.out.println("Writing: "+data.toString());
 				ByteBuffer buffer = ByteBuffer.wrap(data);
-				try {
-					channel.write(buffer);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			writeList.clear();
-			key.interestOps(SelectionKey.OP_READ);
-			client.setWriting(false);
+				channel.write(buffer);
 
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		writeList.clear();
+		key.interestOps(SelectionKey.OP_READ);
+		synchronized(client){
+			client.setWriting(false);
+		}
+
+		//}
 
 		// TODO Auto-generated method stub
 

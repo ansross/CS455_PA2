@@ -54,13 +54,10 @@ public class Server implements ServerNode {
 		if(Protocol.DEBUG){
 			System.out.println("Started Server");
 		}
-		System.out.println("1");
 		servSockCh = ServerSocketChannel.open();
 		servSockCh.configureBlocking(false);
-		System.out.println("2");
 		servSockCh.socket().bind(new InetSocketAddress(port));
 		servSockCh.register(selector, SelectionKey.OP_ACCEPT);
-		System.out.println("3");
 		int numTasks = 0;
 		int numRead = 0;
 		while(true){
@@ -94,6 +91,7 @@ public class Server implements ServerNode {
 			//	this.connect(key);
 			//}
 			else if(key.isWritable()){
+				//System.out.println("Client is ready to write");
 				ClientInfo client = (ClientInfo) key.attachment();
 				if(client == null){
 					System.out.println("client not attached to key");
@@ -104,6 +102,7 @@ public class Server implements ServerNode {
 				}
 			}
 			else if(key.isReadable()){
+				//System.out.println("Clinet is realdy to read");
 				ClientInfo client = (ClientInfo) key.attachment();
 				if(client == null){
 					System.out.println("client not attached to key");
