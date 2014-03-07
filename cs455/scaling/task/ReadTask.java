@@ -1,6 +1,7 @@
 package cs455.scaling.task;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -8,6 +9,7 @@ import java.nio.channels.SocketChannel;
 import cs455.scaling.client.ClientInfo;
 import cs455.scaling.server.Server;
 import cs455.scaling.util.Protocol;
+import cs455.scaling.util.Utilities;
 
 public class ReadTask implements Task {
 	private Server server;
@@ -33,7 +35,6 @@ public class ReadTask implements Task {
 		ByteBuffer buffer = ByteBuffer.allocate(Protocol.MESSAGE_SIZE);
 		int read = 0;
 		try{
-			System.out.println("7");
 			while(buffer.hasRemaining() && read!=-1){
 				//System.out.println("8");
 				read = channel.read(buffer);
@@ -57,8 +58,13 @@ public class ReadTask implements Task {
 		byte[] bufferBytes = new byte[Protocol.MESSAGE_SIZE];
 		buffer.get(bufferBytes);
 		//TODO
-		String hash = "7";
-		System.out.println("IMPLEMENT HASH");
+		String hash="";
+		try {
+			hash = Utilities.SHA1FromBytes(bufferBytes);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		ClientInfo client = (ClientInfo) key.attachment();
 		client.addToPendingWriteList(hash);
 		key.interestOps(SelectionKey.OP_WRITE);
