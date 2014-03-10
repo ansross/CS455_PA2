@@ -63,7 +63,7 @@ public class ReadTask implements Task {
 		try {
 			hash = Utilities.SHA1FromBytes(bufferBytes);
 			if(hash.length() != 40){
-				System.out.println("generated hash not 40 chars, all is lost");
+				//System.out.println("generated hash not 40 chars, all is lost");
 			}
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block

@@ -37,7 +37,7 @@ public class SendTask implements Task{
 			for(byte[] data : writeList){
 				try {
 					System.out.println("Sending hash "+new String(data) + 
-							"\n \t to " + client.toString());
+							"\n \t to " + client.toString() +'\n');
 					ByteBuffer buffer = ByteBuffer.wrap(data);
 					channel.write(buffer);
 

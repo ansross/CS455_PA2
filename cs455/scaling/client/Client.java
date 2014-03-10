@@ -76,7 +76,7 @@ public class Client {
 			e.printStackTrace();
 		}
 		senderThread.start();
-		while(!sock.isConnected()){
+		
 			//waits for a read to be ready
 			int i=0;
 
@@ -86,7 +86,8 @@ public class Client {
 				//chars are 2 bytes, 20 chars per hash
 				int dataLength = 2*20;
 
-				if(sock!=null){
+				while(sock!=null){
+					System.out.println("checking for response");
 					byte [] responseHash = new byte[dataLength];
 					din.readFully(responseHash, 0, dataLength);
 					checkHashes(new String(responseHash));
@@ -103,7 +104,7 @@ public class Client {
 
 			//DELETE ME!!
 			//while(true){}
-		}
+		//}
 		System.out.println("Socket is disconnected");
 
 	}

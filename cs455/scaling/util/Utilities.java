@@ -13,7 +13,8 @@ public class Utilities {
 			BigInteger hashInt = new BigInteger(1, hash);
 			hashString = hashInt.toString(16);
 			if(hashString.length() != 40){
-				System.out.println("ERROR: hash not 40 chars!");
+				hashString +='a';
+				//System.out.println("ERROR: hash not 40 chars!");
 			}
 		//}
 		//	return hashInt;
