@@ -2,6 +2,7 @@ package cs455.scaling.client;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -17,14 +18,17 @@ import cs455.scaling.util.Utilities;
 
 //20 char response
 public class Client {
+	//private LinkedList<String> sentHashCodes;
 	private LinkedList<String> sentHashCodes;
 	private double msgRate;
 	private int serverPort;
 	private String serverHostName;
 	private Socket sock;
 	private Thread senderThread;
+	private volatile boolean complete;
 
 	public Client(String hostArg, int portArg, int rateArg) throws IOException{
+		complete=false;
 		this.msgRate = rateArg;
 		this.serverHostName = hostArg;
 		this.serverPort = portArg;
@@ -72,18 +76,16 @@ public class Client {
 			e.printStackTrace();
 		}
 		senderThread.start();
-		//while(!sock.isConnected()){;}
-		//waits for a read to be ready
-		int i=0;
+		while(!sock.isConnected()){
+			//waits for a read to be ready
+			int i=0;
 
-		DataInputStream din;
-		try {
-			din = new DataInputStream(sock.getInputStream());
+			DataInputStream din;
+			try {
+				din = new DataInputStream(sock.getInputStream());
+				//chars are 2 bytes, 20 chars per hash
+				int dataLength = 2*20;
 
-			boolean complete=false;
-			//chars are 2 bytes, 20 chars per hash
-			int dataLength = 2*20;
-			while(!complete){
 				if(sock!=null){
 					byte [] responseHash = new byte[dataLength];
 					din.readFully(responseHash, 0, dataLength);
@@ -92,63 +94,25 @@ public class Client {
 				}
 			}
 
-		}	catch (IOException ioe){
-			ioe.printStackTrace();
+			catch (IOException ioe){
+				ioe.printStackTrace();
+
+			}
+			//for(int i=0; i<5; ++i)
+
+
+			//DELETE ME!!
+			//while(true){}
 		}
-		//for(int i=0; i<5; ++i)
-
-
-		//DELETE ME!!
-		//while(true){}
-
+		System.out.println("Socket is disconnected");
 
 	}
 
-
-	/*
-
-	private void checkForResponse(ByteBuffer buf) {
-		//ByteBuffer buf = ByteBuffer.allocate(Protocol.MESSAGE_SIZE);
-
-		System.out.println("checking for response");
-		int bytesRead=0;
-		try {
-			System.out.println("1");
-
-			//TODO ??!?!?!?!?! WHERE DO THE FLIPS GO?
-			buf.flip();
-			if(Protocol.DEBUG){
-				System.out.println("buf.hasRemaining(): "+(buf.hasRemaining())+"/n read!=-1" + (bytesRead != -1));
-			}
-			while(buf.hasRemaining() && bytesRead !=-1){
-				System.out.println("2");
-				bytesRead = sock.read(buf);
-			}
-
-			System.out.println("3");
-			if(bytesRead == -1){
-				System.out.println("Connection Closed in Client");
-			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		if(bytesRead == -1){
-			// connection terminated
-		}
-
-
-		//if have message, check awaited hashes
-		if(bytesRead >0){
-			System.out.println("4");
-			checkHashes(buf);
-		}
-
-		buf.clear();
-		// TODO Auto-generated method stub
-
+	public void setComplete(boolean comp){
+		complete=comp;
 	}
-	 */
+
+
 	private void checkHashes(String response){
 		if(Protocol.DEBUG){
 			System.out.println("Client received hash: " + response);
@@ -157,12 +121,12 @@ public class Client {
 			int respIndex = sentHashCodes.indexOf(response);
 			//if were waiting for such a hash code, remove it from the list
 			if(respIndex != -1){
-				System.out.println("Received hash match! "+response);
+				System.out.println("Received hash match!  "+response+'\n');
 				sentHashCodes.remove(respIndex);
 			}
 
 			else{
-				System.out.println("Client recieved unexpected hash");
+				System.out.println("Client recieved unexpected hash "+response+"\n");
 			}
 		}
 

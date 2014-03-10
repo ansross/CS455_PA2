@@ -2,6 +2,7 @@ package cs455.scaling.client;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
@@ -31,7 +32,7 @@ public class TCPSenderThread implements Runnable {
 			dout.write(dataToSend);//, 0, dataLength);
 			//System.out.println("send point 1.3");
 			dout.flush();
-			System.out.println("Sent message: "+new String(dataToSend));
+			System.out.println("Sent message");
 		}catch(IOException ioe){
 			System.out.println("Sender IOE");
 			ioe.printStackTrace();
@@ -40,7 +41,9 @@ public class TCPSenderThread implements Runnable {
 
 	@Override
 	public void run() {
-		while(!complete){
+		//TODO CHANGE BACK!!!
+		//while(!complete)
+		for(int i=0; i<10; i++){
 			byte[] message = createAndHashMessage();
 			try {
 				sendMessage(message);
@@ -63,9 +66,10 @@ public class TCPSenderThread implements Runnable {
 	private byte[] createAndHashMessage(){
 		//generate a message
 		byte [] message = new byte[Protocol.MESSAGE_SIZE];
+		//CHANGE BACK!!!
 		(new Random()).nextBytes(message);
 		//calculate and store hash
-		String hash="hash";
+		String hash=null;
 		try {
 			hash = Utilities.SHA1FromBytes(message);
 			client.addHash(hash);
@@ -73,12 +77,14 @@ public class TCPSenderThread implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(Protocol.DEBUG){
-			System.out.println("Created hash: "+hash);
-		}
-		if(hash.length()!=40){
+		System.out.println("Created hash: "+hash);
+		
+		/*
+		if(hash.bitLength()!=40){
 			System.out.println("Hash isn't length 40");
-		}
+			System.out.println("Hashes are malfunctioning, client will die");
+			client.setComplete(true);
+		}*/
 		
 		return message;
 	}

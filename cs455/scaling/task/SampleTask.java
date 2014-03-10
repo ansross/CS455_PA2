@@ -4,7 +4,7 @@ public class SampleTask implements Task {
 
 	@Override
 	public void execute() {
-		System.out.println("I've been executed!");
+		//System.out.println("I've been executed!");
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {

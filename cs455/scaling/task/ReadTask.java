@@ -2,6 +2,7 @@ package cs455.scaling.task;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -46,7 +47,7 @@ public class ReadTask implements Task {
 			server.disconnect(key);
 			return;
 		}
-		System.out.println("1");
+		
 		if(read==-1){
 			//TODO
 			//client terminated connection
@@ -58,15 +59,18 @@ public class ReadTask implements Task {
 		byte[] bufferBytes = new byte[Protocol.MESSAGE_SIZE];
 		buffer.get(bufferBytes);
 		//TODO
-		String hash="";
+		String hash=null;
 		try {
 			hash = Utilities.SHA1FromBytes(bufferBytes);
+			if(hash.length() != 40){
+				System.out.println("generated hash not 40 chars, all is lost");
+			}
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		ClientInfo client = (ClientInfo) key.attachment();
-		client.addToPendingWriteList(hash);
+		client.addToPendingWriteList(hash.getBytes());
 		key.interestOps(SelectionKey.OP_WRITE);
 		//}
 		//ClientInfo client = (ClientInfo) key.attachment();

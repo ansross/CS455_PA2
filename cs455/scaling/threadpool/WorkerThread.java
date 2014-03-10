@@ -43,7 +43,7 @@ public class WorkerThread implements Runnable {
 			this.stateLock.lock();
 			hasTask=false;
 			currentTask=null;
-			System.out.println("I am free: "+this.isFree());
+			//System.out.println("I am free: "+this.isFree());
 		}finally{
 			this.stateLock.unlock();
 		}
@@ -64,14 +64,14 @@ public class WorkerThread implements Runnable {
 	@Override
 	public void run() {
 		if(Protocol.DEBUG){
-			System.out.println("I am running");
+			//System.out.println("I am running");
 		}
 		while(this.running){
 			if(!this.isFree()){
 				currentTask.execute();
 				makeFree();
 				if(Protocol.DEBUG){
-				System.out.println("I completed a Task");
+				//System.out.println("I completed a Task");
 				}
 			}
 				

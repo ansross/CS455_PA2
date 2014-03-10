@@ -51,13 +51,13 @@ public class Server implements ServerNode {
 	}
 
 	private void startServer() throws IOException{
-		if(Protocol.DEBUG){
-			System.out.println("Started Server");
-		}
+		
+		
 		servSockCh = ServerSocketChannel.open();
 		servSockCh.configureBlocking(false);
 		servSockCh.socket().bind(new InetSocketAddress(port));
 		servSockCh.register(selector, SelectionKey.OP_ACCEPT);
+		System.out.println("Started Server");
 		int numTasks = 0;
 		int numRead = 0;
 		while(true){
@@ -80,8 +80,8 @@ public class Server implements ServerNode {
 			//determine type of task that is ready
 			Task newTask=null;
 			if(key.isAcceptable()){
-				System.out.println("making connection task");
-				System.out.println(key.toString());
+				//System.out.println("making connection task");
+				//System.out.println(key.toString());
 				accept(key);
 				//newTask = new ConnectTask(key, this);
 			}
@@ -97,7 +97,7 @@ public class Server implements ServerNode {
 					System.out.println("client not attached to key");
 				}
 				if(!client.isWriting()){
-					System.out.println("making writable");
+					//System.out.println("making writable");
 					newTask = new SendTask(key);
 				}
 			}
@@ -108,7 +108,7 @@ public class Server implements ServerNode {
 					System.out.println("client not attached to key");
 				}
 				if(!client.isReading()){
-					System.out.println("making read task");
+					//System.out.println("making read task");
 					newTask = new ReadTask(key, this);
 				}
 			}

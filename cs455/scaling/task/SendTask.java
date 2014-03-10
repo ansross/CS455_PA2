@@ -32,13 +32,12 @@ public class SendTask implements Task{
 
 		SocketChannel channel = (SocketChannel) key.channel();
 		ArrayList<byte []> writeList = client.getPendingWriteList();
-		System.out.println("write list length: "+writeList.size());
+		//System.out.println("write list length: "+writeList.size());
 		synchronized(writeList){
 			for(byte[] data : writeList){
-
 				try {
 					System.out.println("Sending hash "+new String(data) + 
-							" to " + client.toString());
+							"\n \t to " + client.toString());
 					ByteBuffer buffer = ByteBuffer.wrap(data);
 					channel.write(buffer);
 
