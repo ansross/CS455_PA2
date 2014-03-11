@@ -1,8 +1,6 @@
 package cs455.scaling.task;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -10,7 +8,7 @@ import java.nio.channels.SocketChannel;
 import cs455.scaling.client.ClientInfo;
 import cs455.scaling.server.Server;
 import cs455.scaling.util.Protocol;
-
+//not used, connection handled in server
 public class ConnectTask implements Task {
 	private Server server;
 	private SelectionKey key;
