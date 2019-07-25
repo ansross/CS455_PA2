@@ -15,7 +15,7 @@ File Breakdown:
   .client:
      Client: main client class for sending, storing and checking hashes, no
 	clean way to quit
-     ClientInfo: stores information abouta client used by the server to check
+     ClientInfo: stores information about a client used by the server to check
 	what hashes need to be sent and if it is currently being serviced
      TCPSenderThread: used by the Client to send messages at specified rate
   .server:
